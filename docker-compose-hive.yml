@@ -5,6 +5,7 @@ services:
     container_name: namenode
     volumes:
       - ./data/namenode:/hadoop/dfs/name
+      - /app/hdfs:/app/hdfs
     environment:
       - CLUSTER_NAME=test
     env_file:
@@ -38,16 +39,20 @@ services:
     command: /opt/hive/bin/hive --service metastore
   hive-metastore-postgresql:
     image: bde2020/hive-metastore-postgresql:2.1.0
+    ports:
+      - "5432:5432"
   spark-master:
-    image: bde2020/spark-master:2.1.0-hadoop2.8-hive-java8
+    image: bde2020/spark-master:2.2.0-hadoop2.8-hive-java8
     container_name: spark-master
     ports:
       - 8080:8080
       - 7077:7077
+    volumes:
+      - /app/spark:/app/spark
     env_file:
       - ./hadoop-hive.env
   spark-worker:
-    image: bde2020/spark-worker:2.1.0-hadoop2.8-hive-java8
+    image: bde2020/spark-worker:2.2.0-hadoop2.8-hive-java8
     depends_on:
       - spark-master
     environment:
